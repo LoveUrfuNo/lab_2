@@ -25,13 +25,13 @@ namespace lab_2
         /// которое является суммой чисел c и this
         public Rational Add(Rational c)
         {
-            Rational rational = new Rational();
-            rational.Numerator = c.Numerator * this.Denominator + this.Numerator * c.Numerator;
-            rational.Denominator = c.Denominator * this.Denominator;
+            Rational result = new Rational();
+            result.Numerator = c.Numerator * this.Denominator + this.Numerator * c.Denominator;
+            result.Denominator = c.Denominator * this.Denominator;
 
             Even();
 
-            return rational;
+            return result;
         }
 
         /// Операция смены знака, возвращает новый объект - рациональное число,
@@ -88,8 +88,9 @@ namespace lab_2
             }
 
             string fraction = (numerator == 0 ? "" : "." + numerator + ":" + Denominator);
+            string result = Base == 0 ? fraction.Replace(".", "") : Base + fraction;
 
-            return Base + fraction;
+            return result;
         }
 
         /// Создание экземпляра рационального числа из строкового представления Z.N:D
@@ -106,7 +107,7 @@ namespace lab_2
             if (input.Contains('-'))
             {
                 Console.WriteLine("Can't parse negative value");
-
+                
                 return false;
             }
 
@@ -127,9 +128,9 @@ namespace lab_2
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine("TryParse exception -> " + e.Message);
+                Console.WriteLine("Проверьте введенные данные");
 
                 return false;
             }
