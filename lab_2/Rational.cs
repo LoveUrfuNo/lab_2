@@ -25,13 +25,13 @@ namespace lab_2
         /// которое является суммой чисел c и this
         public Rational Add(Rational c)
         {
-            Rational result = new Rational();
-            result.Numerator = c.Numerator * this.Denominator + this.Numerator * c.Denominator;
-            result.Denominator = c.Denominator * this.Denominator;
+            Rational rational = new Rational();
+            rational.Numerator = c.Numerator * this.Denominator + this.Numerator * c.Denominator;
+            rational.Denominator = c.Denominator * this.Denominator;
 
             Even();
 
-            return result;
+            return rational;
         }
 
         /// Операция смены знака, возвращает новый объект - рациональное число,
@@ -81,16 +81,15 @@ namespace lab_2
         /// Если Z = 0, опускается часть представления до точки включительно
         public override string ToString()
         {
-            int numerator = Numerator;
-            while (numerator >= Denominator)
+            int absNumerator = Math.Abs(Numerator);
+            while (absNumerator >= Denominator)
             {
-                numerator -= Denominator;
+                absNumerator -= Denominator;
             }
 
-            string fraction = (numerator == 0 ? "" : "." + numerator + ":" + Denominator);
-            string result = Base == 0 ? fraction.Replace(".", "") : Base + fraction;
-
-            return result;
+            return Numerator < 0 ? "-" : "" + 
+                Math.Abs(Base) + "." + 
+                (absNumerator == 0 ? "" : absNumerator + ":" + Denominator);
         }
 
         /// Создание экземпляра рационального числа из строкового представления Z.N:D
@@ -100,37 +99,45 @@ namespace lab_2
         /// число
         /// true, если конвертация из строки в число была успешной,
         /// false если строка не соответствует формату
-        public static bool TryParse(string input, out Rational result)
+        public static bool TryParse(string input, out Rational rational)
         {
-            result = new Rational();
-
-            if (input.Contains('-'))
-            {
-                Console.WriteLine("Can't parse negative value");
-                
-                return false;
-            }
+            rational = new Rational();
 
             string[] numberParts = input.Split('.', ':');
             try
             {
+                int minusCounter = 0;
+                foreach (string part in numberParts)
+                {
+                    if (part.Contains('-'))
+                    {
+                        minusCounter++;
+                    }
+                }
+
+                if (minusCounter > 1)
+                {
+                    throw new FormatException();
+                }
+
+                int sign = int.Parse(numberParts[0]) >= 0 ? 1 : -1;
                 if (input.Contains('.'))
                 {
-                    result.Denominator = int.Parse(numberParts[2]);
-                    result.Numerator =
-                        int.Parse(numberParts[0]) * result.Denominator + int.Parse(numberParts[1]);
+                    rational.Denominator = int.Parse(numberParts[2]);
+                    rational.Numerator =
+                        int.Parse(numberParts[0]) * rational.Denominator + sign * int.Parse(numberParts[1]);                   
                 }
                 else
                 {
-                    result.Denominator = int.Parse(numberParts[1]);
-                    result.Numerator = int.Parse(numberParts[0]);
+                    rational.Denominator = int.Parse(numberParts[1]);
+                    rational.Numerator = int.Parse(numberParts[0]);
                 }
 
                 return true;
             }
             catch (Exception)
             {
-                Console.WriteLine("Проверьте введенные данные");
+                Console.WriteLine("Проверьте введенные данные.Числа должны иметь вид: Z.N:D");
 
                 return false;
             }
@@ -140,19 +147,65 @@ namespace lab_2
         /// и знаменателя. Вызывается реализацией после каждой арифметической операции
         private void Even()
         {
-            if (Numerator == 0 || Denominator == 0)
-            {
-                return;
-            }
-
             int nod = getNod(Numerator, Denominator);
-            Numerator = Numerator / nod;
-            Denominator = Denominator / nod;
+            Denominator /= nod;
+            Numerator /= nod;
         }
 
         private int getNod(int x, int y)
         {
+            x = Math.Abs(x);
+            y = Math.Abs(y);
             return y == 0 ? x : getNod(y, x % y);
+        }
+
+        public static Rational operator +(Rational x, Rational y)
+        {
+            Rational rational = new Rational();
+            if (y.Denominator != x.Denominator)
+            {
+                int cDenominator = x.Denominator;
+                x.Denominator *= cDenominator;
+                x.Numerator *= y.Denominator;
+                y.Denominator *= cDenominator;
+                y.Numerator *= cDenominator;
+
+                rational.Denominator = y.Denominator;
+            }
+            else
+            {
+                rational.Denominator = y.Denominator;
+            }
+
+            rational.Numerator = y.Numerator + x.Numerator;
+            rational.Even();
+
+            return rational;
+        }
+
+        public static Rational operator *(Rational x, Rational y)
+        {
+            Rational rational = new Rational();
+            rational.Denominator = x.Denominator * y.Denominator;
+            rational.Numerator = x.Numerator * y.Numerator;
+            rational.Even();
+
+            return rational;
+        }
+
+        public static Rational operator /(Rational x, Rational y)
+        {
+            Rational rational = new Rational();
+            rational.Numerator = x.Numerator * y.Denominator;
+            rational.Denominator = x.Denominator * y.Numerator;
+            rational.Even();
+
+            return rational;
+        }
+
+        public static Rational operator -(Rational x, Rational y)
+        {
+            return x + y.Negate();
         }
     }
 }

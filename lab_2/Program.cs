@@ -78,19 +78,19 @@ namespace lab_2
                 switch (commandLineParts[USER_COMMAND_NUMBER])
                 {
                     case ADD:
-                        result = firstRational.Add(secondRational);
+                        result = firstRational + secondRational;
                         break;
 
                     case SUB:
-                        result = firstRational.Add(secondRational.Negate());
+                        result = firstRational - secondRational;
                         break;
 
                     case MULTIPLY:
-                        result = firstRational.Multiply(secondRational);
+                        result = firstRational * secondRational;
                         break;
 
                     case DIVIDEBY:
-                        result = firstRational.DivideBy(secondRational);
+                        result = firstRational / secondRational;
                         break;
 
                     case HELP:
