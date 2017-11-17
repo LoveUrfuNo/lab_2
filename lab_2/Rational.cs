@@ -87,9 +87,19 @@ namespace lab_2
                 absNumerator -= Denominator;
             }
 
-            return Numerator < 0 ? "-" : "" + 
-                Math.Abs(Base) + "." + 
-                (absNumerator == 0 ? "" : absNumerator + ":" + Denominator);
+            string _base = Math.Abs(Base).ToString();
+            _base = _base == "0" ? "" : _base;
+
+            string sign = Numerator < 0 ? "-" : "";
+            string fraction = (absNumerator == 0 ? "" : absNumerator + ":" + Denominator);
+
+            string maybeDot = ".";
+            if (_base.Equals("") || fraction.Equals(""))
+            {
+                maybeDot = "";
+            }
+
+            return sign + _base + maybeDot + fraction;
         }
 
         /// Создание экземпляра рационального числа из строкового представления Z.N:D
@@ -129,15 +139,23 @@ namespace lab_2
                 }
                 else
                 {
-                    rational.Denominator = int.Parse(numberParts[1]);
-                    rational.Numerator = int.Parse(numberParts[0]);
+                    if (numberParts.Length == 1)
+                    {
+                        rational.Numerator = int.Parse(numberParts[0]);
+                        rational.Denominator = 1;
+                    }
+                    else
+                    {
+                        rational.Denominator = int.Parse(numberParts[1]);
+                        rational.Numerator = int.Parse(numberParts[0]);
+                    }
                 }
 
                 return true;
             }
             catch (Exception)
             {
-                Console.WriteLine("Проверьте введенные данные.Числа должны иметь вид: Z.N:D");
+                Console.WriteLine("Проверьте введенные данные. Числа должны иметь вид: Z.N:D или Z");
 
                 return false;
             }
@@ -148,14 +166,18 @@ namespace lab_2
         private void Even()
         {
             int nod = getNod(Numerator, Denominator);
-            Denominator /= nod;
-            Numerator /= nod;
+            if (nod != 0)
+            {
+                Denominator /= nod;
+                Numerator /= nod;
+            }
         }
 
         private int getNod(int x, int y)
         {
             x = Math.Abs(x);
             y = Math.Abs(y);
+
             return y == 0 ? x : getNod(y, x % y);
         }
 

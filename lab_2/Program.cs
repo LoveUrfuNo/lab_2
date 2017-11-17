@@ -111,15 +111,9 @@ namespace lab_2
                 {
                     if (result.Numerator != 0 && result.Denominator != 0)
                     {
-                        if (result.Numerator == 0)
-                        {   
-                            Console.WriteLine(result.ToString());
-                        }
-                        else
-                        {
-                            Console.WriteLine(result.ToString());
-                        }
+                        Console.WriteLine(result.ToString());
                     }
+
                     Console.Write(" >> ");
                 }
             }
