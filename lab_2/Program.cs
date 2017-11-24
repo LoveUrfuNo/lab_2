@@ -53,7 +53,7 @@ namespace lab_2
                             commandLineParts[FIRST_RATIONAL_NUMBER], out firstRational);
                         bool isSecondRationalCorrect = Rational.TryParse(
                             commandLineParts[SECOND_RATIONAL_NUMBER], out secondRational);
-                        if (!(isFirstRationalCorrect || isSecondRationalCorrect))
+                        if (!isFirstRationalCorrect || !isSecondRationalCorrect)
                         {
                             throw new FormatException();
                         }
@@ -68,7 +68,7 @@ namespace lab_2
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Неверный формат введеных чисел");
+                    Console.WriteLine("Проверьте введенные данные. Числа должны иметь вид: Z.N:D или Z");
                     Console.Write(" >> ");
 
                     continue;

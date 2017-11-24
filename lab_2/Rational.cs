@@ -16,59 +16,18 @@ namespace lab_2
 
         /// Целая часть числа Z.N:D, Z. получается делением числителя на знаменатель и
         /// отбрасыванием остатка
-        public int Base => (int)Math.Truncate((double)Numerator / Denominator);
+        public int Base => Numerator / Denominator;
 
         /// Дробная часть числа Z.N:D, N:D
-        public double Fraction => Numerator / Denominator - Base;
+        public int Fraction => Numerator / Denominator - Base;
 
-        /// Операция сложения, возвращает новый объект - рациональное число,
-        /// которое является суммой чисел c и this
-        public Rational Add(Rational c)
+        private Rational Negate()
         {
-            Rational rational = new Rational();
-            rational.Numerator = c.Numerator * this.Denominator + this.Numerator * c.Denominator;
-            rational.Denominator = c.Denominator * this.Denominator;
+            Rational negate = new Rational();
+            negate.Numerator = 0 - Numerator;
+            negate.Denominator = Denominator; 
 
-            Even();
-
-            return rational;
-        }
-
-        /// Операция смены знака, возвращает новый объект - рациональное число,
-        /// которое являтеся разностью числа 0 и this
-        public Rational Negate()
-        {
-            Rational rational = new Rational();
-            rational.Denominator = this.Denominator;
-            rational.Numerator = -this.Numerator;
-
-            Even();
-
-            return rational;
-        }
-
-        /// Операция умножения, возвращает новый объект - рациональное число,
-        /// которое является результатом умножения чисел x и this
-        public Rational Multiply(Rational x)
-        {
-            Rational rational = new Rational();
-            rational.Numerator = x.Numerator * this.Numerator;
-            rational.Denominator = x.Denominator * this.Denominator;
-
-            Even();
-
-            return rational;
-        }
-
-        /// Операция деления, возвращает новый объект - рациональное число,
-        /// которое является результатом деления this на x
-        public Rational DivideBy(Rational x)
-        {
-            Rational rational = new Rational();
-            rational.Numerator = this.Numerator * x.Denominator;
-            rational.Denominator = this.Denominator * x.Numerator;
-
-            return rational;
+            return negate;
         }
 
         /// Вовзращает строковое представление числа в виде Z.N:D, где
@@ -116,6 +75,11 @@ namespace lab_2
             string[] numberParts = input.Split('.', ':');
             try
             {
+                if (numberParts.Length == 3 && input.IndexOf('.') > input.IndexOf(':'))
+                {
+                    throw new FormatException();
+                }
+
                 int minusCounter = 0;
                 foreach (string part in numberParts)
                 {
@@ -155,8 +119,6 @@ namespace lab_2
             }
             catch (Exception)
             {
-                Console.WriteLine("Проверьте введенные данные. Числа должны иметь вид: Z.N:D или Z");
-
                 return false;
             }
         }
@@ -184,22 +146,10 @@ namespace lab_2
         public static Rational operator +(Rational x, Rational y)
         {
             Rational rational = new Rational();
-            if (y.Denominator != x.Denominator)
-            {
-                int cDenominator = x.Denominator;
-                x.Denominator *= cDenominator;
-                x.Numerator *= y.Denominator;
-                y.Denominator *= cDenominator;
-                y.Numerator *= cDenominator;
 
-                rational.Denominator = y.Denominator;
-            }
-            else
-            {
-                rational.Denominator = y.Denominator;
-            }
+            rational.Numerator = x.Numerator * y.Denominator + y.Numerator * x.Denominator;
+            rational.Denominator = x.Denominator * y.Denominator;
 
-            rational.Numerator = y.Numerator + x.Numerator;
             rational.Even();
 
             return rational;
@@ -228,6 +178,20 @@ namespace lab_2
         public static Rational operator -(Rational x, Rational y)
         {
             return x + y.Negate();
+        }
+
+        public static explicit operator Rational(int x)
+        {
+            return new Rational
+            {
+                Numerator = x,
+                Denominator = x
+            };
+        }
+
+        public static explicit operator int(Rational x)
+        {
+            return x.Base;
         }
     }
 }
