@@ -25,7 +25,7 @@ namespace lab_2
         {
             Rational negate = new Rational();
             negate.Numerator = 0 - Numerator;
-            negate.Denominator = Denominator; 
+            negate.Denominator = Denominator;
 
             return negate;
         }
@@ -72,6 +72,12 @@ namespace lab_2
         {
             rational = new Rational();
 
+            if (input.Where(symbol => symbol == '.').Count() > 1 ||
+                input.Where(symbol => symbol == ':').Count() > 1)
+            {
+                throw new FormatException();
+            }
+
             string[] numberParts = input.Split('.', ':');
             try
             {
@@ -99,7 +105,7 @@ namespace lab_2
                 {
                     rational.Denominator = int.Parse(numberParts[2]);
                     rational.Numerator =
-                        int.Parse(numberParts[0]) * rational.Denominator + sign * int.Parse(numberParts[1]);                   
+                        int.Parse(numberParts[0]) * rational.Denominator + sign * int.Parse(numberParts[1]);
                 }
                 else
                 {
@@ -180,7 +186,7 @@ namespace lab_2
             return x + y.Negate();
         }
 
-        public static explicit operator Rational(int x)
+        public static implicit operator Rational(int x)
         {
             return new Rational
             {
@@ -189,7 +195,7 @@ namespace lab_2
             };
         }
 
-        public static explicit operator int(Rational x)
+        public static implicit operator int(Rational x)
         {
             return x.Base;
         }
