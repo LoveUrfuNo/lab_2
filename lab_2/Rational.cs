@@ -19,7 +19,7 @@ namespace lab_2
         public int Base => Numerator / Denominator;
 
         /// Дробная часть числа Z.N:D, N:D
-        public int Fraction => Numerator / Denominator - Base;
+        public int Fraction => Numerator % Denominator;
 
         private Rational Negate()
         {
