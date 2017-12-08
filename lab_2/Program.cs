@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace lab_2
 {
@@ -30,9 +26,37 @@ namespace lab_2
         public static void Main(string[] args)
         {
             Console.WriteLine("Привет! Я жду команд!");
-            Console.Write(" >> ");
 
             ProgramCycle();
+        }
+
+        private static Rational ExecuteRationalOperation(string[] commandLineParts, Func<Rational, Rational, Rational> operation)
+        {
+            Rational firstRational = new Rational();
+            Rational secondRational = new Rational();
+
+            try
+            {
+                if (!COMMANDS_WITHOUT_NEED_FOR_NUMBER.Contains(commandLineParts[USER_COMMAND_NUMBER]))
+                {
+                    bool isFirstRationalCorrect = Rational.TryParse(
+                        commandLineParts[FIRST_RATIONAL_NUMBER], out firstRational);
+                    bool isSecondRationalCorrect = Rational.TryParse(
+                        commandLineParts[SECOND_RATIONAL_NUMBER], out secondRational);
+                    if (!isFirstRationalCorrect || !isSecondRationalCorrect)
+                    {
+                        Console.WriteLine("Проверьте введенные данные. "
+                            + "Числа должны иметь вид: (-)Z.N:D или (-)N:D или Z. "
+                            + "D - должно быть больше нуля");
+                        continue;
+                    }
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("Введите 2 числа");
+                continue;
+            }
         }
 
         private static void ProgramCycle()
@@ -40,57 +64,32 @@ namespace lab_2
             bool isProgramRunning = true;
             while (isProgramRunning)
             {
+                Console.Write(" >> ");
                 string commandLine = Console.ReadLine();
                 string[] commandLineParts = commandLine.ToLower().Split(' ');
-
-                Rational firstRational = new Rational();
-                Rational secondRational = new Rational();
-                try
-                {
-                    if (!COMMANDS_WITHOUT_NEED_FOR_NUMBER.Contains(commandLineParts[USER_COMMAND_NUMBER]))
-                    {
-                        bool isFirstRationalCorrect = Rational.TryParse(
-                            commandLineParts[FIRST_RATIONAL_NUMBER], out firstRational);
-                        bool isSecondRationalCorrect = Rational.TryParse(
-                            commandLineParts[SECOND_RATIONAL_NUMBER], out secondRational);
-                        if (!isFirstRationalCorrect || !isSecondRationalCorrect)
-                        {
-                            throw new FormatException();
-                        }
-                    }
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    Console.WriteLine("Введите корректное кол-во чисел");
-                    Console.Write(" >> ");
-
-                    continue;
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Проверьте введенные данные. Числа должны иметь вид: Z.N:D или Z");
-                    Console.Write(" >> ");
-
-                    continue;
-                }
 
                 Rational result = new Rational();
                 switch (commandLineParts[USER_COMMAND_NUMBER])
                 {
                     case ADD:
-                        result = firstRational + secondRational;
+                        result = ExecuteRationalOperation(commandLineParts, (x, y) => x + y);
+                        Console.WriteLine(result.ToString());
+                        //result = firstRational + secondRational;
                         break;
 
                     case SUB:
                         result = firstRational - secondRational;
+                        Console.WriteLine(result.ToString());
                         break;
 
                     case MULTIPLY:
                         result = firstRational * secondRational;
+                        Console.WriteLine(result.ToString());
                         break;
 
                     case DIVIDEBY:
                         result = firstRational / secondRational;
+                        Console.WriteLine(result.ToString());
                         break;
 
                     case HELP:
@@ -105,16 +104,6 @@ namespace lab_2
                     default:
                         Console.WriteLine("Вы ввели некоректную команду");
                         break;
-                }
-
-                if (isProgramRunning)
-                {
-                    if (result.Numerator != 0 && result.Denominator != 0)
-                    {
-                        Console.WriteLine(result.ToString());
-                    }
-
-                    Console.Write(" >> ");
                 }
             }
         }

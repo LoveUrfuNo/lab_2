@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lab_2
 {
@@ -19,14 +16,13 @@ namespace lab_2
         public int Base => Numerator / Denominator;
 
         /// Дробная часть числа Z.N:D, N:D
-        public int Fraction => Numerator / Denominator - Base;
+        public int Fraction => Numerator % Denominator;
 
         private Rational Negate()
         {
             Rational negate = new Rational();
-            negate.Numerator = 0 - Numerator;
+            negate.Numerator = - Numerator;
             negate.Denominator = Denominator;
-
             return negate;
         }
 
@@ -40,25 +36,29 @@ namespace lab_2
         /// Если Z = 0, опускается часть представления до точки включительно
         public override string ToString()
         {
-            int absNumerator = Math.Abs(Numerator);
-            while (absNumerator >= Denominator)
+            if (Base != 0 && Fraction != 0)
             {
-                absNumerator -= Denominator;
+                return Base + "." + Math.Abs(Fraction) + ":" + Denominator;
             }
-
-            string _base = Math.Abs(Base).ToString();
-            _base = _base == "0" ? "" : _base;
-
-            string sign = Numerator < 0 ? "-" : "";
-            string fraction = (absNumerator == 0 ? "" : absNumerator + ":" + Denominator);
-
-            string maybeDot = ".";
-            if (_base.Equals("") || fraction.Equals(""))
+            else if (Fraction != 0)
             {
-                maybeDot = "";
+                return Numerator + ":" + Denominator;
             }
+            return Base.ToString();
 
-            return sign + _base + maybeDot + fraction;
+            //string _base = Math.Abs(Base).ToString();
+            //_base = _base == "0" ? "" : _base;
+
+            //string sign = Numerator < 0 ? "-" : "";
+            //string fraction = (absNumerator == 0 ? "" : absNumerator + ":" + Denominator);
+
+            //string maybeDot = ".";
+            //if (_base.Equals("") || fraction.Equals(""))
+            //{
+            //    maybeDot = "";
+            //}
+
+            //return sign + _base + maybeDot + fraction;
         }
 
         /// Создание экземпляра рационального числа из строкового представления Z.N:D
@@ -72,36 +72,24 @@ namespace lab_2
         {
             rational = new Rational();
 
-            if (input.Where(symbol => symbol == '.').Count() > 1 ||
-                input.Where(symbol => symbol == ':').Count() > 1)
-            {
-                throw new FormatException();
-            }
-
-            string[] numberParts = input.Split('.', ':');
             try
             {
-                if (numberParts.Length == 3 && input.IndexOf('.') > input.IndexOf(':'))
+                string[] numberParts = input.Split('.', ':');
+                var minusCount = input.Where(symbol => symbol == '-').Count();
+                if (input.LastIndexOf("-") > 0)
                 {
-                    throw new FormatException();
+                    return false;
                 }
 
-                int minusCounter = 0;
-                foreach (string part in numberParts)
+                if (input.Where(symbol => symbol == '.').Count() > 1 ||
+                    input.Where(symbol => symbol == ':').Count() > 1 ||
+                    input.IndexOf('.') > input.IndexOf(':'))
                 {
-                    if (part.Contains('-'))
-                    {
-                        minusCounter++;
-                    }
+                    return false;
                 }
-
-                if (minusCounter > 1)
-                {
-                    throw new FormatException();
-                }
-
+                
                 int sign = int.Parse(numberParts[0]) >= 0 ? 1 : -1;
-                if (input.Contains('.'))
+                if (numberParts.Length > 2)
                 {
                     rational.Denominator = int.Parse(numberParts[2]);
                     rational.Numerator =
@@ -120,7 +108,6 @@ namespace lab_2
                         rational.Numerator = int.Parse(numberParts[0]);
                     }
                 }
-
                 return true;
             }
             catch (Exception)
@@ -195,7 +182,7 @@ namespace lab_2
             };
         }
 
-        public static implicit operator int(Rational x)
+        public static explicit operator int(Rational x)
         {
             return x.Base;
         }
