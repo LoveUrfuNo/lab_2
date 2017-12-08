@@ -21,8 +21,9 @@ namespace lab_2
         private Rational Negate()
         {
             Rational negate = new Rational();
-            negate.Numerator = - Numerator;
+            negate.Numerator = -Numerator;
             negate.Denominator = Denominator;
+
             return negate;
         }
 
@@ -44,6 +45,7 @@ namespace lab_2
             {
                 return Numerator + ":" + Denominator;
             }
+
             return Base.ToString();
 
             //string _base = Math.Abs(Base).ToString();
@@ -75,7 +77,7 @@ namespace lab_2
             try
             {
                 string[] numberParts = input.Split('.', ':');
-                var minusCount = input.Where(symbol => symbol == '-').Count();
+
                 if (input.LastIndexOf("-") > 0)
                 {
                     return false;
@@ -87,27 +89,25 @@ namespace lab_2
                 {
                     return false;
                 }
-                
+
                 int sign = int.Parse(numberParts[0]) >= 0 ? 1 : -1;
-                if (numberParts.Length > 2)
+                if (numberParts.Length == 3)
                 {
                     rational.Denominator = int.Parse(numberParts[2]);
                     rational.Numerator =
                         int.Parse(numberParts[0]) * rational.Denominator + sign * int.Parse(numberParts[1]);
                 }
+                else if (numberParts.Length == 2)
+                {
+                    rational.Denominator = int.Parse(numberParts[1]);
+                    rational.Numerator = int.Parse(numberParts[0]);
+                }
                 else
                 {
-                    if (numberParts.Length == 1)
-                    {
-                        rational.Numerator = int.Parse(numberParts[0]);
-                        rational.Denominator = 1;
-                    }
-                    else
-                    {
-                        rational.Denominator = int.Parse(numberParts[1]);
-                        rational.Numerator = int.Parse(numberParts[0]);
-                    }
+                    rational.Numerator = int.Parse(numberParts[0]);
+                    rational.Denominator = 1;
                 }
+
                 return true;
             }
             catch (Exception)
